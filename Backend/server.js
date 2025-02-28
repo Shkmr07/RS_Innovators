@@ -1,12 +1,24 @@
-const express = require("express")
+const express = require("express");
+const connectDB = require("./config");
+const routes = require("./src/routes/combine.routes");
+require("dotenv").config();
 
-const app = express()
+const app = express();
+const PORT = process.env.PORT || 3000;
 
-app.use(express.json())
+app.use(express.json());
+app.get("/", (req, res) =>
+  res.send("🎯 Welcome to my gamify wellness application")
+);
+app.use("/api", routes);
 
-
-
-app.listen(3000,()=>{
-    console.log("Server is running at http://localhost:3000")
-})
-
+connectDB()
+  .then(() => {
+    app.listen(PORT, () => {
+      console.log(`🚀 Server is running at http://localhost:${PORT}`);
+    });
+  })
+  .catch((err) => {
+    console.log("❌ Database connection failed", err.message);
+    process.exit(1);
+  });
