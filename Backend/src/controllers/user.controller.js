@@ -71,16 +71,16 @@ const updatePassword = async (req, res) => {
 };
 
 // ✅ Get All Users (For leaderboard or listing)
-const getAllUsers = async (req, res) => {
-  try {
-    const users = await User.find()
-      .sort({ totalAsanas: -1 })
-      .select("name email role totalAsanas"); // Sorting by asanas completed
-    res.status(200).json(users);
-  } catch (err) {
-    res.status(500).json({ error: `❌ Error fetching users: ${err.message}` });
-  }
-};
+// const getAllUsers = async (req, res) => {
+//   try {
+//     const users = await User.find()
+//       .sort({ totalAsanas: -1 })
+//       .select("name email role totalAsanas"); // Sorting by asanas completed
+//     res.status(200).json(users);
+//   } catch (err) {
+//     res.status(500).json({ error: `❌ Error fetching users: ${err.message}` });
+//   }
+// };
 
 // ✅ Get a Single User (By ID)
 // const getUserById = async (req, res) => {
@@ -135,7 +135,6 @@ const deleteUser = async (req, res) => {
 
 module.exports = {
   createUser,
-  getAllUsers,
   updateUser,
   deleteUser,
   login,

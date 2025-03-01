@@ -2,6 +2,7 @@ const express = require("express");
 const connectDB = require("./config");
 const routes = require("./src/routes/combine.routes");
 const cookieParser = require('cookie-parser')
+const morgan = require("morgan")
 require("dotenv").config();
 
 const app = express();
@@ -9,6 +10,7 @@ const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 app.use(cookieParser())
+app.use(morgan("dev"))
 
 app.get("/", (req, res) =>
   res.send("🎯 Welcome to my gamify wellness application")

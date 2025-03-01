@@ -2,7 +2,6 @@ const express = require("express");
 const {
   createUser,
   login,
-  getAllUsers,
   updateUser,
   updatePassword,
   deleteUser,
@@ -14,7 +13,7 @@ const userRoute = express.Router();
 
 userRoute.post("/signup", createUser);
 userRoute.post("/login", login);
-userRoute.get("/",getAllUsers);
+// userRoute.get("/",getAllUsers);
 userRoute.put("/updateName", auth, access(["admin", "user"]), updateUser);
 userRoute.put("/resetPassword", auth, access(["user"]), updatePassword);
 userRoute.delete("/", auth, access(["admin"]), deleteUser);
