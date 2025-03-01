@@ -4,54 +4,55 @@ const User = require("../models/User");
 // ✅ Log a Yoga Session
 const logYogaSession = async (req, res) => {
   try {
-    const { userId, asanasCompleted, difficulty } = req.body;
-
-    // Check if user exists
-    const user = await User.findById(userId);
-    if (!user) {
-      return res.status(404).json({ error: "❌ User not found" });
-    }
+    const payload = req.body;
 
     // Create Yoga session
-    const yogaSession = await Yoga.create({
-      userId,
-      asanasCompleted,
-      difficulty,
-    });
+    const yoga = new Yoga(payload);
+    yoga.userId = req.user.userId;
 
-    // Update totalAsanas count in User model
-    user.totalAsanas += asanasCompleted;
-    await user.save();
+    await yoga.save();
 
-    res.status(201).json({ message: "✅ Yoga session logged successfully", yogaSession });
+    res
+      .status(201)
+      .json({ message: "✅ Yoga session logged successfully", yoga });
   } catch (err) {
-    res.status(500).json({ error: `❌ Error logging yoga session: ${err.message}` });
+    res
+      .status(500)
+      .json({ error: `❌ Error logging yoga session: ${err.message}` });
   }
 };
 
 // ✅ Get All Yoga Sessions (For admin/debugging)
 const getAllYogaSessions = async (req, res) => {
   try {
-    const sessions = await Yoga.find().populate("userId", "name");
+    const sessions = await Yoga.find()
+      .populate("userId", "name email totalAsanas role")
+      .select("date asanasCompleted difficulty");
     res.status(200).json(sessions);
   } catch (err) {
-    res.status(500).json({ error: `❌ Error fetching yoga sessions: ${err.message}` });
+    res
+      .status(500)
+      .json({ error: `❌ Error fetching yoga sessions: ${err.message}` });
   }
 };
 
 // ✅ Get Yoga Sessions by User ID (For progress tracking)
 const getUserYogaSessions = async (req, res) => {
   try {
-    const userId = req.params.userId;
-    const sessions = await Yoga.find({ userId }).sort({ createdAt: -1 });
+    const userId = req.user.userId;
+    const sessions = await Yoga.find({ userId }).sort({ date : -1 });
 
     if (!sessions.length) {
-      return res.status(404).json({ error: "❌ No yoga sessions found for this user" });
+      return res
+        .status(404)
+        .json({ error: "❌ No yoga sessions found for this user" });
     }
 
     res.status(200).json(sessions);
   } catch (err) {
-    res.status(500).json({ error: `❌ Error fetching yoga sessions: ${err.message}` });
+    res
+      .status(500)
+      .json({ error: `❌ Error fetching yoga sessions: ${err.message}` });
   }
 };
 
@@ -59,24 +60,33 @@ const getUserYogaSessions = async (req, res) => {
 const updateYogaSession = async (req, res) => {
   try {
     const { asanasCompleted, difficulty } = req.body;
-    const sessionId = req.params.id;
+    const userId = req.user.userId;
+    
+    // Get today's start time
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
 
-    const session = await Yoga.findById(sessionId);
+    // Find today's session
+    const session = await Yoga.findOne({ userId, date: { $gte: today } });
+
     if (!session) {
-      return res.status(404).json({ error: "❌ Yoga session not found" });
+      return res.status(404).json({ message: "❌ No session found for today" });
     }
 
-    // Adjust user's totalAsanas count
-    const user = await User.findById(session.userId);
-    if (user) {
-      user.totalAsanas += asanasCompleted - session.asanasCompleted;
-      await user.save();
-    }
+    // Store previous asanas count for accurate update
+    const prevAsanas = session.asanasCompleted;
 
     // Update session details
     session.asanasCompleted = asanasCompleted;
     session.difficulty = difficulty;
     await session.save();
+
+    // Update user totalAsanas correctly
+    const user = await User.findById(userId);
+    if (user) {
+      user.totalAsanas += asanasCompleted - prevAsanas; // Ensure correct increment/decrement
+      await user.save();
+    }
 
     res.status(200).json({ message: "✅ Yoga session updated successfully", session });
   } catch (err) {
@@ -84,33 +94,10 @@ const updateYogaSession = async (req, res) => {
   }
 };
 
-// ✅ Delete a Yoga Session
-const deleteYogaSession = async (req, res) => {
-  try {
-    const sessionId = req.params.id;
-    const session = await Yoga.findById(sessionId);
-    if (!session) {
-      return res.status(404).json({ error: "❌ Yoga session not found" });
-    }
-
-    // Adjust user's totalAsanas count
-    const user = await User.findById(session.userId);
-    if (user) {
-      user.totalAsanas -= session.asanasCompleted;
-      await user.save();
-    }
-
-    await Yoga.findByIdAndDelete(sessionId);
-    res.status(200).json({ message: "✅ Yoga session deleted successfully" });
-  } catch (err) {
-    res.status(500).json({ error: `❌ Error deleting yoga session: ${err.message}` });
-  }
-};
 
 module.exports = {
   logYogaSession,
   getAllYogaSessions,
   getUserYogaSessions,
   updateYogaSession,
-  deleteYogaSession,
 };
