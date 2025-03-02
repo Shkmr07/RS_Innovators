@@ -29,6 +29,7 @@ export default function Navbar() {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+
     if (isSignUp && formData.password !== formData.confirmPassword) {
       alert("Passwords do not match!");
       return;
@@ -43,7 +44,6 @@ export default function Navbar() {
           role: formData.role,
         }
       : { email: formData.email, password: formData.password };
-    console.log(payload);
     try {
       const response = await fetch(`http://localhost:3000${endpoint}`, {
         method: "POST",
@@ -54,7 +54,9 @@ export default function Navbar() {
       const data = await response.json();
       if (response.ok) {
         alert(`${isSignUp ? "Signup" : "Login"} Successful!`);
-        sessionStorage.setItem("token", data.accessToken);
+        if(!isSignUp){
+          sessionStorage.setItem("token", data.accessToken);
+        }
         setIsAuthenticated(true);
         setIsModalOpen(false);
       } else {
