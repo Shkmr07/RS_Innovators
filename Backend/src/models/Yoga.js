@@ -7,6 +7,8 @@ const YogaSchema = new mongoose.Schema(
       type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
+    yogaName : {type : String, required : true},
+    duration : {type: Number, required : true, default : 0, min : 0},
     date: { type: Date, default: Date.now },
     asanasCompleted: { type: Number, required: true },
     difficulty: {
@@ -14,6 +16,7 @@ const YogaSchema = new mongoose.Schema(
       enum: ["Easy", "Medium", "Hard"],
       required: true,
     },
+    description : String
   },
   { timestamps: true, versionKey: false }
 );

@@ -40,7 +40,7 @@ const getAllYogaSessions = async (req, res) => {
 const getUserYogaSessions = async (req, res) => {
   try {
     const userId = req.user.userId;
-    const sessions = await Yoga.find({ userId }).sort({ date: -1 });
+    const sessions = await Yoga.find({ userId }).populate("userId","name").sort({ date: -1 });
 
     if (!sessions.length) {
       return res
@@ -57,17 +57,17 @@ const getUserYogaSessions = async (req, res) => {
 };
 
 
-const leaderboard = async (req,res) => {
-  try{
-    const yogaList = await Yoga.find().populate("userId", "name email totalAsanas role").sort({asanasCompleted : -1})
-    if(yogaList.length === 0){
-      return res.status(404).json({message : "No yoga found"})
-    }
-    res.status(200).json({message : "✅ Yoga List", yogaList})
-  }catch(err){
-    res.status(500).json({error : `❌ Error to get leaderboard list ${err.message}`})
-  }
-}
+// const leaderboard = async (req,res) => {
+//   try{
+//     const yogaList = await Yoga.find().populate("userId", "name email totalAsanas role").sort({asanasCompleted : -1})
+//     if(yogaList.length === 0){
+//       return res.status(404).json({message : "No yoga found"})
+//     }
+//     res.status(200).json({message : "✅ Yoga List", yogaList})
+//   }catch(err){
+//     res.status(500).json({error : `❌ Error to get leaderboard list ${err.message}`})
+//   }
+// }
 
 // ✅ Update a Yoga Session
 const updateYogaSession = async (req, res) => {
@@ -118,5 +118,5 @@ module.exports = {
   getAllYogaSessions,
   getUserYogaSessions,
   updateYogaSession,
-  leaderboard
+  // leaderboard
 };

@@ -83,17 +83,17 @@ const updatePassword = async (req, res) => {
 // };
 
 // ✅ Get a Single User (By ID)
-// const getUserById = async (req, res) => {
-//   try {
-//     const user = await User.findById(req.params.id);
-//     if (!user) {
-//       return res.status(404).json({ error: "❌ User not found" });
-//     }
-//     res.status(200).json(user);
-//   } catch (err) {
-//     res.status(500).json({ error: `❌ Error fetching user: ${err.message}` });
-//   }
-// };
+const getUserDetail = async (req, res) => {
+  try {
+    const user = await User.findById(req.user.userId)
+    if (!user) {
+      return res.status(404).json({ error: "❌ User not found" });
+    }
+    res.status(200).json(user);
+  } catch (err) {
+    res.status(500).json({ error: `❌ Error fetching user: ${err.message}` });
+  }
+};
 
 // ✅ Update User (Modify name)
 const updateUser = async (req, res) => {
@@ -133,10 +133,25 @@ const deleteUser = async (req, res) => {
   }
 };
 
+
+const leaderboard =  async (req,res) => {
+  try{
+    const users = await User.find().sort({totalAsanas : -1}).select("name totalAsanas")
+    if(users.length === 0){
+      return res.status(404).json({message : "No users"})
+    }
+    res.status(200).json(users)
+  }catch(err){
+    res.status(500).json({ error: `❌ Error getting users: ${err.message}` })
+  }
+}
+
 module.exports = {
   createUser,
   updateUser,
   deleteUser,
   login,
   updatePassword,
+  getUserDetail,
+  leaderboard
 };

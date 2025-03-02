@@ -5,6 +5,8 @@ const {
   updateUser,
   updatePassword,
   deleteUser,
+  getUserDetail,
+  leaderboard,
 } = require("../controllers/user.controller");
 const auth = require("../middlewares/auth.middleware");
 const access = require("../middlewares/access.middleware");
@@ -13,9 +15,10 @@ const userRoute = express.Router();
 
 userRoute.post("/signup", createUser);
 userRoute.post("/login", login);
-// userRoute.get("/",getAllUsers);
+userRoute.get("/profile",auth,getUserDetail);
 userRoute.put("/updateName", auth, access(["admin", "user"]), updateUser);
 userRoute.put("/resetPassword", auth, access(["user"]), updatePassword);
 userRoute.delete("/", auth, access(["admin"]), deleteUser);
+userRoute.get("/leaderboard",leaderboard)
 
 module.exports = userRoute;
