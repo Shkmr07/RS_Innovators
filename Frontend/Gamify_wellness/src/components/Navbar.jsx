@@ -56,8 +56,9 @@ export default function Navbar() {
         alert(`${isSignUp ? "Signup" : "Login"} Successful!`);
         if(!isSignUp){
           sessionStorage.setItem("token", data.accessToken);
+          setIsAuthenticated(true);
         }
-        setIsAuthenticated(true);
+
         setIsModalOpen(false);
       } else {
         alert(data.message || "Something went wrong!");
