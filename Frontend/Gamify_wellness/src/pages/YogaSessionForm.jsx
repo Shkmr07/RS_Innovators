@@ -14,7 +14,7 @@ export default function YogaSession() {
 
   const getToken = () => sessionStorage.getItem("token");
 
-  const API_BASE_URL = "http://localhost:3000/api/yoga"; // Change as per your backend
+  const API_BASE_URL = "https://rs-innovators.onrender.com/api/yoga"; // Change as per your backend
   const fetchUrl = `${API_BASE_URL}/yogaDetails`;
   const submitUrl = `${API_BASE_URL}/create`; // Adjust the endpoint
 

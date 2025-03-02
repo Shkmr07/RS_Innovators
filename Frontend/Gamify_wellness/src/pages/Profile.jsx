@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
-  const API_URL = "http://localhost:3000/api/user/profile";
+  const API_URL = "https://rs-innovators.onrender.com/api/user/profile";
 
   // Function to get token
   const getToken = () => sessionStorage.getItem("token");

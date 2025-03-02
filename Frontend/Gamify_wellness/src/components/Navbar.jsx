@@ -45,7 +45,7 @@ export default function Navbar() {
         }
       : { email: formData.email, password: formData.password };
     try {
-      const response = await fetch(`http://localhost:3000${endpoint}`, {
+      const response = await fetch(`https://rs-innovators.onrender.com${endpoint}`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(payload),

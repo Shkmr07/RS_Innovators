@@ -4,7 +4,7 @@ export default function LeaderboardPage() {
   const [leaderboard, setLeaderboard] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const API_URL = "http://localhost:3000/api/user/leaderboard"; // Replace with your actual API endpoint
+  const API_URL = "https://rs-innovators.onrender.com/api/user/leaderboard"; // Replace with your actual API endpoint
 
   useEffect(() => {
     async function fetchLeaderboard() {
