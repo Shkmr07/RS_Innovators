@@ -1,6 +1,8 @@
 const User = require("../models/User");
 const jwt = require("jsonwebtoken");
 const bcrypt = require("bcrypt");
+const Blacklist = require("../models/Blacklist");
+const sendResponse = require("../../utils/sendResponse");
 
 // ✅ login
 
@@ -85,7 +87,7 @@ const updatePassword = async (req, res) => {
 // ✅ Get a Single User (By ID)
 const getUserDetail = async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId)
+    const user = await User.findById(req.user.userId);
     if (!user) {
       return res.status(404).json({ error: "❌ User not found" });
     }
@@ -133,18 +135,36 @@ const deleteUser = async (req, res) => {
   }
 };
 
-
-const leaderboard =  async (req,res) => {
-  try{
-    const users = await User.find().sort({totalAsanas : -1}).select("name totalAsanas")
-    if(users.length === 0){
-      return res.status(404).json({message : "No users"})
+const leaderboard = async (req, res) => {
+  try {
+    const users = await User.find()
+      .sort({ totalAsanas: -1 })
+      .select("name totalAsanas");
+    if (users.length === 0) {
+      return res.status(404).json({ message: "No users" });
     }
-    res.status(200).json(users)
-  }catch(err){
-    res.status(500).json({ error: `❌ Error getting users: ${err.message}` })
+    res.status(200).json(users);
+  } catch (err) {
+    res.status(500).json({ error: `❌ Error getting users: ${err.message}` });
   }
-}
+};
+
+const logout = async (req, res) => {
+  try {
+    const accessToken = req.headers.authorization?.split(" ")[1];
+    const refreshToken = req.cookies?.refreshToken;
+
+    if (!accessToken || !refreshToken) {
+      return sendResponse(res, 404, false, "Tokens are missing");
+    }
+
+    await Blacklist.insertMany([{ token: accessToken }, { token: refreshToken }]);
+
+    sendResponse(res, 200, true, "Logout Successful");
+  } catch (err) {
+    sendResponse(res, 500, false, err.message);
+  }
+};
 
 module.exports = {
   createUser,
@@ -153,5 +173,6 @@ module.exports = {
   login,
   updatePassword,
   getUserDetail,
-  leaderboard
+  leaderboard,
+  logout,
 };
