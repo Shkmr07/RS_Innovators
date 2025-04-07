@@ -152,13 +152,19 @@ const leaderboard = async (req, res) => {
 const logout = async (req, res) => {
   try {
     const accessToken = req.headers.authorization?.split(" ")[1];
-    const refreshToken = req.cookies?.refreshToken;
+    // const refreshToken = req.cookies?.refreshToken;
 
-    if (!accessToken || !refreshToken) {
+    if(!accessToken){
       return sendResponse(res, 404, false, "Tokens are missing");
     }
 
-    await Blacklist.insertMany([{ token: accessToken }, { token: refreshToken }]);
+    await Blacklist.create({token : accessToken})
+
+    // if (!accessToken || !refreshToken) {
+    //   return sendResponse(res, 404, false, "Tokens are missing");
+    // }
+
+    // await Blacklist.insertMany([{ token: accessToken }, { token: refreshToken }]);
 
     sendResponse(res, 200, true, "Logout Successful");
   } catch (err) {

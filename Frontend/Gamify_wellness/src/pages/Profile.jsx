@@ -2,15 +2,42 @@ import React, { useState, useEffect } from "react";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
-  const API_URL = "https://rs-innovators.onrender.com/api/user/profile";
+  const [isLoading, setIsLoading] = useState(false)
+  const API_URL = "https://rs-innovators.onrender.com/api/user";
 
   // Function to get token
   const getToken = () => sessionStorage.getItem("token");
+  const removeToken = () => sessionStorage.removeItem("token")
+
+  async function logout(){
+    setIsLoading(true)
+    try{
+      const res = await fetch(`${API_URL}/logout`, {
+        method : "POST",
+        headers : {Authorization: `Bearer ${getToken()}`}
+      })
+
+      if (!res.ok) throw new Error("Failed to failed to logout");
+
+      removeToken()
+      
+      alert("Logout Successful")
+      
+
+    }catch(err){
+      console.error(err.message)
+    }
+    finally{
+      setIsLoading(false)
+    }
+  }
+
+
 
   useEffect(() => {
     async function fetchUserData() {
       try {
-        const response = await fetch(API_URL, {
+        const response = await fetch(`${API_URL}/profile`, {
           headers: { Authorization: `Bearer ${getToken()}` },
         });
 
@@ -47,6 +74,8 @@ export default function Profile() {
         <p className="text-gray-500">{user.email}</p>
         <p className="mt-2 text-lg font-bold text-blue-500">Total Asanas: {user.totalAsanas}</p>
         <p className="mt-2 text-gray-600">{user.bio}</p>
+        <button onClick={logout} className="py-1 px-2 font-semibold tracking-wide text-white rounded-lg bg-red-600 hover:bg-red-700 ">{isLoading?"Loading...":"Logout"}</button>
+
       </div>
     </div>
   );
