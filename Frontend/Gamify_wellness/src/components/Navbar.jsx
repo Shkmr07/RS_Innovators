@@ -2,7 +2,7 @@ import { NavLink } from "react-router-dom";
 import { useState, useEffect } from "react";
 
 export default function Navbar() {
-  const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [isAuthenticated, setIsAuthenticated] = useState(!!sessionStorage.getItem("token") || false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isSignUp, setIsSignUp] = useState(false); // Toggle between Login & Signup
 

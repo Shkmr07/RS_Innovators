@@ -1,9 +1,17 @@
 import React, { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import {useNavigate} from "react-router-dom"
+import { fetchUserDetail } from "../redux/reducers/userSlice";
 
 export default function Profile() {
   const [user, setUser] = useState(null);
   const [isLoading, setIsLoading] = useState(false)
   const API_URL = "https://rs-innovators.onrender.com/api/user";
+  const navigate = useNavigate()
+  const dispatch = useDispatch()
+  const userDetail = useSelector((state)=>state.user.user)
+
+  console.log(userDetail)
 
   // Function to get token
   const getToken = () => sessionStorage.getItem("token");
@@ -20,8 +28,11 @@ export default function Profile() {
       if (!res.ok) throw new Error("Failed to failed to logout");
 
       removeToken()
+      setUser(null)
       
       alert("Logout Successful")
+
+      navigate("/")
       
 
     }catch(err){
@@ -32,6 +43,11 @@ export default function Profile() {
     }
   }
 
+
+  useEffect(()=>{
+    dispatch(fetchUserDetail())
+     
+  },[dispatch])
 
 
   useEffect(() => {
